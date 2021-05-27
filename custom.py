@@ -1,7 +1,7 @@
 import os
 import sys
-import json
-import datetime
+import urllib
+import shutil
 import numpy as np
 
 # Root directory of the project
@@ -12,8 +12,9 @@ sys.path.append(ROOT_DIR)  # To find local version of the library
 from mrcnn.config import Config
 from mrcnn import model as modellib, utils
 
-# Path to trained weights file
-COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
+#Custom model url to download from release
+CUSTOM_MODEL_URL = "https://github.com/theailabs-in/mask_rcnn/releases/download/1.0/mask_rcnn_custom.h5"
+
 
 # Directory to save logs and model checkpoints, if not provided
 # through the command line argument --logs
@@ -44,3 +45,15 @@ class CustomConfig(Config):
 
     # Skip detections with < 90% confidence
     DETECTION_MIN_CONFIDENCE = 0.9
+
+def download_trained_weights(custom_model_path, verbose=1):
+    """Download COCO trained weights from Releases.
+
+    coco_model_path: local path of COCO trained weights
+    """
+    if verbose > 0:
+        print("Downloading pretrained model to " + custom_model_path + " ...")
+    with urllib.request.urlopen(CUSTOM_MODEL_URL) as resp, open(custom_model_path, 'wb') as out:
+        shutil.copyfileobj(resp, out)
+    if verbose > 0:
+        print("... done downloading pretrained model!")
